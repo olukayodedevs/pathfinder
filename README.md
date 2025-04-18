@@ -55,8 +55,8 @@ chmod +x report.sh
 ```
 
 
-# Pls Run The Ansible Only On Linux  
+# Pls Run The Ansible On Linux  
 
-###Thanks! 
+## Thanks! 
 
-Please contact me at olukayodearinde01@gmail.com for any questions
+### Please contact me at olukayodearinde01@gmail.com for any questions
