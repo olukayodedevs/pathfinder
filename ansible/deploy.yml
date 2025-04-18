@@ -1,0 +1,56 @@
+---
+- name: Deploy Pathfinder Monitor
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: [python3, python3-pip]
+        update_cache: yes
+
+    - name: Create pathfinder directory
+      file:
+        path: /opt/pathfinder
+        state: directory
+        mode: '0755'
+
+    - name: Deploy scripts
+      copy:
+        src: "../{{ item }}"
+        dest: /opt/pathfinder/
+        mode: '0755'
+      loop: [pf_healthcheck.py, pf_analyze.py]
+
+    - name: Set correct output file path
+      lineinfile:
+        path: /opt/pathfinder/pf_healthcheck.py
+        regexp: '^OUTPUT_FILE ='
+        line: 'OUTPUT_FILE = "/opt/pathfinder/pathfinder_health.csv"'
+
+    - name: Install Python packages even in managed env
+      shell: |
+        pip3 install --break-system-packages requests pyOpenSSL pandas
+
+    - name: Create systemd service
+      copy:
+        dest: /etc/systemd/system/pathfinder-monitor.service
+        content: |
+          [Unit]
+          Description=Pathfinder Monitor
+          After=network.target
+          
+          [Service]
+          WorkingDirectory=/opt/pathfinder
+          ExecStart=/usr/bin/python3 /opt/pathfinder/pf_healthcheck.py
+          Restart=always
+          
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Enable and restart service
+      systemd:
+        name: pathfinder-monitor
+        enabled: yes
+        state: restarted
+
