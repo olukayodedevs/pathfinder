@@ -53,3 +53,10 @@ chmod +x verify.sh
 chmod +x report.sh
 ./report.sh
 ```
+
+
+# Pls Run The Ansible Only On Linux  
+
+###Thanks! 
+
+Please contact me at olukayodearinde01@gmail.com for any questions
